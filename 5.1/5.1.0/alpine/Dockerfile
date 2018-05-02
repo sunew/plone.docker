@@ -1,7 +1,7 @@
 FROM python:2.7-alpine3.7
 
 ENV ZC_BUILDOUT=2.11.2 \
-    SETUPTOOLS=33.1.1 \
+    SETUPTOOLS=38.7.0 \
     PLONE_MAJOR=5.1 \
     PLONE_VERSION=5.1.0 \
     PLONE_MD5=76dc6cfc1c749d763c32fff3a9870d8d
@@ -36,8 +36,9 @@ RUN apk add --no-cache --virtual .build-deps \
 && pip install setuptools==$SETUPTOOLS zc.buildout==$ZC_BUILDOUT \
 && cd /plone/instance \
 && buildout \
+&& ln -s /usr/local/bin/pip /plone/instance/bin/pip \
+&& ln -s /usr/local/bin/python /plone/instance/bin/python \
 && ln -s /usr/local/bin/buildout /plone/instance/bin/buildout \
-&& ln -s /usr/local/bin/python /plone/Python-2.7 \
 && ln -s /data/filestorage/ /plone/instance/var/filestorage \
 && ln -s /data/blobstorage /plone/instance//var/blobstorage \
 && chown -R plone:plone /plone /data \
@@ -58,6 +59,9 @@ COPY docker-initialize.py docker-entrypoint.sh /
 
 EXPOSE 8080
 WORKDIR /plone/instance
+
+HEALTHCHECK --interval=1m --timeout=5s --start-period=1m \
+  CMD nc -z -w5 127.0.0.1 8080 || exit 1
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["start"]
