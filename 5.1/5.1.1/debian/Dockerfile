@@ -43,8 +43,6 @@ RUN buildDeps="wget gcc libc6-dev libpcre3-dev libssl-dev libxml2-dev libxslt1-d
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /plone/buildout-cache/downloads/*
 
-VOLUME /data
-
 COPY docker-initialize.py docker-entrypoint.sh /
 
 EXPOSE 8080
